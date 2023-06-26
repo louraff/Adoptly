@@ -87,7 +87,7 @@ class UserDetails(models.Model):
 # name, species, breed, age, description charfields
 # user can only choose 3 prompts, once all 3 chosen user can't add anymore
 class PetTable(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=3)
     name = models.CharField(max_length=100)
     gender = models.CharField(max_length=50, choices=GENDER_CHOICES, default='M')
     sociability = models.CharField(max_length=40, choices=SOCIABILITY_CHOICES, default='introvert', blank=True)
@@ -105,7 +105,7 @@ class PetTable(models.Model):
         max_length=1,
         choices=VACCINATION_CHOICES, default='N', blank=True
     )
-    monthlyCost = models.DecimalField(max_digits=8, decimal_places=2, blank=True)
+    monthlyCost = models.DecimalField(max_digits=8, decimal_places=2, null=True)
 
     
 
@@ -121,7 +121,7 @@ class Prompt(models.Model):
 #? ADOPTION PREFERENCES
 # activity levels, sociability, size, is_owner charfields
 class AdoptionPreferences(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=1)
     activityLevel = models.CharField(max_length=255, choices=ACTIVITY_LEVEL_CHOICES, default='low')
     sociability = models.CharField(max_length=255, choices=SOCIABILITY_CHOICES, default='both')
     size = models.CharField( max_length=255, choices=SIZE_CHOICES, default='small')

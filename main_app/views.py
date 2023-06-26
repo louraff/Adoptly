@@ -67,9 +67,9 @@ def home(request):
     try:
         user_details = UserDetails.objects.get(user=request.user)
         try:
-           adoption_preferences = AdoptionPreferences.objects.get()
+          adoption_preferences = AdoptionPreferences.objects.get(user=request.user)
         except AdoptionPreferences.DoesNotExist:
-           adoption_preferences = None
+          adoption_preferences = AdoptionPreferences.objects.create(user=request.user)
     except UserDetails.DoesNotExist:
         user_details = None
     return render(request, 'home.html', {
