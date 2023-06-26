@@ -42,23 +42,33 @@ FORMS = [ ("activityLevel", AdoptionPreferencesActivity),
 #? Pawfect matches
     # if score = 3 show pet.name else append
 def find_matches(request):
-  user = AdoptionPreferences.objects.get(user=request.user)
-  pets = PetTable.objects.all()
-  matches = []
-  for pet in pets:
-    score = 0
-    if user.activityLevel == pet.activity_level:
+    try:
+        user = AdoptionPreferences.objects.get(user=request.user)
+    except AdoptionPreferences.DoesNotExist:
+        # if no AdoptionPreferences exists for the user, create one
+        user = AdoptionPreferences.objects.create(
+            user=request.user, 
+            activityLevel='low', 
+            sociability='both', 
+            size='small', 
+            energyLevel='low'
+        )
+    pets = PetTable.objects.all()
+    matches = []
+    for pet in pets:
+      score = 0
+      if user.activityLevel == pet.activity_level:
+          score += 1
+      if user.sociability == pet.sociability:
+          score += 1
+      if user.size == pet.size:
         score += 1
-    if user.sociability == pet.sociability:
-        score += 1
-    if user.size == pet.size:
-       score += 1
-       
-    if score >= 2:
-      matches.append((pet)) #Append the pet and its score as a tuple
-    # sorted_matches = sorted(matches, key=lambda x: x[1], reverse=True) #Sort by score in a descending order
-    # sorted_pets = [pet for pet, score in sorted_matches] #Extract sorted pets
-  return render(request, 'home.html', {'pets': pets})
+        
+      if score >= 2:
+        matches.append((pet)) #Append the pet and its score as a tuple
+      # sorted_matches = sorted(matches, key=lambda x: x[1], reverse=True) #Sort by score in a descending order
+      # sorted_pets = [pet for pet, score in sorted_matches] #Extract sorted pets
+    return render(request, 'home.html', {'pets': pets})
 
 #? Home, render request home.html
 @login_required
@@ -66,17 +76,26 @@ def home(request):
     matches = find_matches(request)
     try:
         user_details = UserDetails.objects.get(user=request.user)
-        try:
-           adoption_preferences = AdoptionPreferences.objects.get()
-        except AdoptionPreferences.DoesNotExist:
-           adoption_preferences = None
     except UserDetails.DoesNotExist:
         user_details = None
+    
+    try:
+        adoption_preferences = AdoptionPreferences.objects.get(user=request.user)
+    except AdoptionPreferences.DoesNotExist:
+        
+        adoption_preferences = AdoptionPreferences.objects.create(
+            user=request.user, 
+            activityLevel='low', 
+            sociability='both', 
+            size='small', 
+            energyLevel='low'
+        )
+
     return render(request, 'home.html', {
       'pets': matches, 
       'user': user_details,
       'pref': adoption_preferences
-      })
+    })
 
 #? Login and signup, render request gateway.html
 def signup(request): #! Sign up function
