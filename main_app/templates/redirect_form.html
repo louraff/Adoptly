@@ -1,18 +1,18 @@
 <!-- redirect_form.html -->
-{% load static %}
+{% load static %} {% block content %}
 
-{% block content %}
-
-
+<h1 class="redirect">I am a...</h1>
 <form method="POST" action="{% url 'redirect_form' %}">
-    {% csrf_token %}
-    <label>
-        <input type="radio" name="user_type" value="owner" required> Owner
+  {% csrf_token %}
+  <div class="redirect">
+    <label class="owner">
+      <input type="radio" name="user_type" value="owner" required /> Owner
     </label>
-    <label>
-        <input type="radio" name="user_type" value="adopter" required> Adopter
+    <label class="adopter">
+      <input type="radio" name="user_type" value="adopter" required /> Adopter
     </label>
-    <button type="submit">Submit</button>
+    <button type="submit" class="redirect-btn">></button>
+  </div>
 </form>
 
 {% endblock %}
